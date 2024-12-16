@@ -17,6 +17,10 @@ func NewTrie(topK int) *Trie {
 
 // TopK returns the top K most frequent words for prefix.
 func (t *Trie) TopK(key string) []nodeInfo {
+	if key == "" {
+		return nil
+	}
+
 	t.mu.RLock() // Блокируем чтение
 	defer t.mu.RUnlock()
 

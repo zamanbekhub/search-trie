@@ -163,6 +163,22 @@ func TestTrie_TopK(t *testing.T) {
 			prefix:      "sams",
 			expectedRes: []nodeInfo{},
 		},
+		{
+			name: "Empty Query",
+			testData: map[string]uint{
+				"ipad":          35,
+				"iphone 16 pro": 28,
+				"iphone":        30,
+				"iphone 16":     45,
+				"айфон макс":    14,
+				"айфон 256":     1,
+				"макбук":        4,
+				"макбук air":    6,
+				"макбук про":    8,
+			},
+			prefix:      "",
+			expectedRes: []nodeInfo{},
+		},
 	}
 
 	for _, tt := range tests {

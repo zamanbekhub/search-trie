@@ -39,7 +39,25 @@ func (root *node) getTopK(key string) []topKHeapItem {
 }
 
 func (root *node) put(key string, frequency uint) {
-	curr, path := root.getOrCreate(key)
+	curr, path := root, make([]*node, 0, len(key))
+	prefix := ""
+
+	path = append(path, curr)
+	for _, r := range key {
+		prefix += string(r)
+		child := curr.children[prefix]
+		if child == nil {
+			if curr.children == nil {
+				curr.children = map[string]*node{}
+			}
+			child = newnode(curr.topK.limit)
+			curr.children[prefix] = child
+		}
+
+		curr = curr.children[prefix]
+		path = append(path, curr)
+	}
+
 	curr.isEnd = true
 	curr.frequency = frequency
 
@@ -49,7 +67,24 @@ func (root *node) put(key string, frequency uint) {
 }
 
 func (root *node) inc(key string) {
-	curr, path := root.getOrCreate(key)
+	curr, path := root, make([]*node, 0, len(key))
+	prefix := ""
+
+	path = append(path, curr)
+	for _, r := range key {
+		prefix += string(r)
+		child := curr.children[prefix]
+		if child == nil {
+			return
+		}
+
+		curr = curr.children[prefix]
+		path = append(path, curr)
+	}
+	if !curr.isEnd {
+		return
+	}
+
 	curr.frequency += 1
 
 	for _, n := range path {
