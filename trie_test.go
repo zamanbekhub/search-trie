@@ -212,6 +212,75 @@ func TestTrie_TopK(t *testing.T) {
 	}
 }
 
+func TestTrie_Has(t *testing.T) {
+	tests := []struct {
+		name        string
+		testData    map[string]uint
+		key         string
+		expectedRes bool
+	}{
+		{
+			name: "Prefix exists",
+			testData: map[string]uint{
+				"ipad":                  35,
+				"iphone 16 pro":         28,
+				"iphone":                30,
+				"iphone 16":             45,
+				"iphone 16 pro max":     14,
+				"iphone 16 pro max 256": 1,
+				"macbook":               4,
+				"macbook air":           6,
+				"macbook pro":           8,
+			},
+			key:         "iphone",
+			expectedRes: true,
+		},
+		{
+			name: "Prefix does not exist",
+			testData: map[string]uint{
+				"ipad":                  35,
+				"iphone 16 pro":         28,
+				"iphone":                30,
+				"iphone 16":             45,
+				"iphone 16 pro max":     14,
+				"iphone 16 pro max 256": 1,
+				"macbook":               4,
+				"macbook air":           6,
+				"macbook pro":           8,
+			},
+			key:         "samsung",
+			expectedRes: false,
+		},
+		{
+			name: "Empty prefix",
+			testData: map[string]uint{
+				"ipad": 35,
+			},
+			key:         "",
+			expectedRes: false, // Assuming empty prefix always matches
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			trie := NewTrie(5)
+
+			// Add keys and their frequencies to the Trie
+			for key, freq := range tt.testData {
+				trie.Put(key, 0) // Add the key with an initial value
+				for i := 0; i < int(freq); i++ {
+					trie.Inc(key) // Increment the frequency of the key
+				}
+			}
+
+			// Test the Has method
+			if has := trie.Has(tt.key); has != tt.expectedRes {
+				t.Errorf("Has(%q) = %v, expected %v", tt.key, has, tt.expectedRes)
+			}
+		})
+	}
+}
+
 //BenchmarkTrie_GetTopK/English_words-8             301017              4525 ns/op             272 B/op          7 allocs/op
 //BenchmarkTrie_GetTopK/Russian_words-8             277951              4034 ns/op             304 B/op          9 allocs/op
 //BenchmarkTrie_Put/Small_dataset-8                 133527              9283 ns/op            1201 B/op         36 allocs/op

@@ -66,6 +66,26 @@ func (root *node) put(key string, frequency uint) {
 	}
 }
 
+func (root *node) has(key string) bool {
+	curr := root
+	prefix := ""
+
+	for _, r := range key {
+		prefix += string(r)
+		child := curr.children[prefix]
+		if child == nil {
+			return false
+		}
+
+		curr = curr.children[prefix]
+	}
+	if !curr.isEnd {
+		return false
+	}
+
+	return true
+}
+
 func (root *node) inc(key string) {
 	curr, path := root, make([]*node, 0, len(key))
 	prefix := ""
@@ -90,29 +110,6 @@ func (root *node) inc(key string) {
 	for _, n := range path {
 		n.updateTopK(key, curr.frequency)
 	}
-}
-
-func (root *node) getOrCreate(key string) (*node, []*node) {
-	curr, path := root, make([]*node, 0, len(key))
-	prefix := ""
-
-	path = append(path, curr)
-	for _, r := range key {
-		prefix += string(r)
-		child := curr.children[prefix]
-		if child == nil {
-			if curr.children == nil {
-				curr.children = map[string]*node{}
-			}
-			child = newnode(curr.topK.limit)
-			curr.children[prefix] = child
-		}
-
-		curr = curr.children[prefix]
-		path = append(path, curr)
-	}
-
-	return curr, path
 }
 
 func (root *node) updateTopK(key string, freq uint) {

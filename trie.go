@@ -40,6 +40,13 @@ func (t *Trie) TopK(key string) []nodeInfo {
 	return out
 }
 
+// Has checks trie has the key.
+func (t *Trie) Has(key string) bool {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	return t.root.has(key)
+}
+
 // Put inserts the given key/frequency pair into the Trie.
 func (t *Trie) Put(key string, frequency uint) {
 	t.mu.Lock()
